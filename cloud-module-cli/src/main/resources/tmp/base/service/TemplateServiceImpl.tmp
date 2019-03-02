@@ -1,0 +1,21 @@
+package ${base_package}.service.impl;
+
+import com.by.base.mapper.IMapper;
+import ${base_package}.mapper.${table.domain}Mapper;
+import ${base_package}.service.${table.domain}Service;
+import com.by.base.service.AbstractBaseService;
+import ${base_package}.vo.${table.domain}Vo;
+import ${base_package}.dto.${table.domain};
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ${table.domain}ServiceImpl extends AbstractBaseService<${table.domain}Vo, ${table.domain}> implements ${table.domain}Service {
+
+    @Autowired private ${table.domain}Mapper thisMapper;
+
+    @Override
+    protected IMapper<${table.domain}Vo, ${table.domain}> getMapper() {
+        return thisMapper;
+    }
+}

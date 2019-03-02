@@ -1,0 +1,80 @@
+package ${base_package}.vo;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import org.springframework.format.annotation.DateTimeFormat;
+@ApiModel("${table.comment?replace('表', '')}查询模版")
+public class ${table.domain}Vo {
+<#list table.columns as column>
+
+    <#if column.type?contains('Date')>
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        <#if column.comment != ''>
+        @ApiModelProperty(value = "${column.comment} - from", example = "")
+        </#if>
+        private ${column.type} ${column.domain}From;
+
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        <#if column.comment != ''>
+        @ApiModelProperty(value = "${column.comment} - to", example = "")
+        </#if>
+        private ${column.type} ${column.domain}To;
+
+    <#elseif column.name?contains('creuser') || column.name?contains('moduser') || column.name?contains('cfmuser')>
+        <#if column.comment != ''>
+        @ApiModelProperty(value = "${column.comment}", example = "")
+        </#if>
+        private ${column.type} ${column.domain}Name;
+
+    <#elseif !(column.name?contains('remark')) && !(column.type?contains('BigDecimal'))>
+        <#if column.comment != ''>
+        @ApiModelProperty(value = "${column.comment}", example = "")
+        </#if>
+        private ${column.type} ${column.domain};
+
+	</#if>
+</#list>
+<#list table.columns as column>
+
+    <#if column.type?contains('Date')>
+
+        public ${column.type} ${column.getting}From() {
+            return ${column.domain}From;
+        }
+
+        public void ${column.setting}From(${column.type} ${column.domain}From) {
+            this.${column.domain}From = ${column.domain}From;
+        }
+
+        public ${column.type} ${column.getting}To() {
+            return ${column.domain}To;
+        }
+
+        public void ${column.setting}To(${column.type} ${column.domain}To) {
+            this.${column.domain}To = ${column.domain}To;
+        }
+    <#elseif column.name?contains('creuser') || column.name?contains('moduser') || column.name?contains('cfmuser')>
+
+        public java.lang.String ${column.getting}Name() {
+            return ${column.domain}Name == null ? null : ${column.domain}Name.trim();
+        }
+
+        public void ${column.setting}Name(java.lang.String ${column.domain}Name) {
+            this.${column.domain}Name = ${column.domain}Name;
+        }
+    <#elseif !(column.name?contains('remark')) && !(column.type?contains('BigDecimal')) && !(column.comment?contains('排序'))>
+
+        public ${column.type} ${column.getting}() {
+        <#if column.type?contains('String')>
+            return ${column.domain} == null ? null : ${column.domain}.trim();
+        <#else>
+            return ${column.domain};
+        </#if>
+        }
+
+        public void ${column.setting}(${column.type} ${column.domain}) {
+            this.${column.domain} = ${column.domain};
+        }
+	</#if>
+</#list>
+}

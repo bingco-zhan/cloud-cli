@@ -1,0 +1,78 @@
+package ${base_package}.mapper.provider;
+
+import ${base_package}.vo.${table.domain}Vo;
+
+public class ${provider} {
+    <#assign order = ''>
+    <#list table.columns as column>
+        <#if column.name?contains('order')>
+            <#assign order = column.domain>
+        </#if>
+    </#list>
+
+    public String selectSelective(${table.domain}Vo record) {
+        StringBuilder sql = new StringBuilder("SELECT ").append(baseColumnList())
+                .append(" FROM `${table.name}` t ").append(baseJoinTable())
+                .append(" WHERE 1 = 1 ").append(baseQuery(record))
+             <#if order != ''>
+                .append(" ORDER BY t.${order} ASC, t.id DESC");
+             <#else>
+                .append(" ORDER BY t.id DESC");
+             </#if>
+        return sql.toString();
+    }
+
+    private String baseColumnList() {
+        return
+        <#list table.columns as column>
+            <#if column_index == table.columns?size -1>
+                "t.`${column.name}`"
+            <#else>
+                "t.`${column.name}`," +
+            </#if>
+        </#list>
+        <#list username as name>
+            + ",${name}"
+        </#list>
+        ;
+    }
+
+    private String baseJoinTable() {
+        return
+        <#list baseJoin as join>
+            <#if join_index == baseJoin?size -1>
+                "${join}";
+            <#else>
+                "${join}" +
+            </#if>
+        </#list>
+        <#if baseJoin?size == 0> "";</#if>
+    }
+
+    private StringBuilder baseQuery(${table.domain}Vo record) {
+        StringBuilder query = new StringBuilder();
+        <#list table.columns as column>
+            <#if column.type?contains('Date')>
+                if (record.${column.getting}From() != null) {
+                    query.append(" AND t.`${column.name}` >= ${"#{ " + column.domain + " }"} ");
+                }
+                if (record.${column.getting}To() != null) {
+                    query.append(" AND t.`${column.name}` <= ${"#{ " + column.domain + " }"} ");
+                }
+            <#elseif column.name?contains('name')>
+                if (record.${column.getting}() != null) {
+                    query.append(" AND t.`${column.name}` like '%" + record.${column.getting}() + "%' ");
+                }
+            <#elseif column.name?contains('creuser') || column.name?contains('moduser') || column.name?contains('cfmuser')>
+                if (record.${column.getting}Name() != null) {
+                    query.append(" AND t.`${column.name}` like '%" + record.${column.getting}Name() + "%' ");
+                }
+            <#elseif !(column.name?contains('remark')) && !(column.type?contains('BigDecimal')) && !(column.comment?contains('排序'))>
+                if (record.${column.getting}() != null) {
+                    query.append(" AND t.`${column.name}` = ${"#{ " + column.domain + " }"} ");
+                }
+            </#if>
+        </#list>
+        return query;
+    }
+}

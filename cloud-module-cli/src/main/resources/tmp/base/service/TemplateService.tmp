@@ -1,0 +1,9 @@
+package ${base_package}.service;
+
+import com.by.base.service.IBaseService;
+import ${base_package}.vo.${table.domain}Vo;
+import ${base_package}.dto.${table.domain};
+
+public interface ${table.domain}Service extends IBaseService<${table.domain}Vo, ${table.domain}> {
+
+}

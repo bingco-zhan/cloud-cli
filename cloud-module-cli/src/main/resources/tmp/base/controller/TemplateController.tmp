@@ -1,0 +1,37 @@
+package ${base_package}.controller;
+
+<#if has_check_or_enabled == 2>
+import com.by.base.controller.AbstractBaseCheckController;
+<#elseif has_check_or_enabled == 1>
+import com.by.base.controller.AbstractBaseEnabledController;
+<#else>
+import com.by.base.controller.AbstractBaseController;
+</#if>
+import ${base_package}.service.${table.domain}Service;
+import com.by.base.service.IBaseService;
+import ${base_package}.vo.${table.domain}Vo;
+import ${base_package}.dto.${table.domain};
+import io.swagger.annotations.Api;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/${table.domain}")
+@Api(tags = "${table.comment}服务API")
+public class ${table.domain}Controller extends
+        <#if has_check_or_enabled == 2>
+            AbstractBaseCheckController<${table.domain}Vo, ${table.domain}> {
+        <#elseif has_check_or_enabled == 1>
+            AbstractBaseEnabledController<${table.domain}Vo, ${table.domain}> {
+        <#else>
+            AbstractBaseController<${table.domain}Vo, ${table.domain}> {
+        </#if>
+
+    @Autowired private ${table.domain}Service thisService;
+
+    @Override
+    public IBaseService<${table.domain}Vo, ${table.domain}> getService() {
+        return thisService;
+    }
+}
